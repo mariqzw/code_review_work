@@ -16,6 +16,8 @@ public class Calculator {
         return a * b;
     }
     public int solver(){
+        return add(2, 3) + times(2, 3) - dif(3, 3);
+
         System.out.println("Решение уравнения 15x + 3 = - 10x - 22");
         return div(add(-22, -3), add(15, 10));
     }
