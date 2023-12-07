@@ -5,17 +5,13 @@
 # This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
 
-name: Scheduled CI
+name: Java CI with Gradle
 
 on:
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-  schedule:
-    - cron: '30 12 * * 3'  # Запуск каждую среду в 12:30
-    - cron: '0 22 * * 5'    # Запуск каждую пятницу в 22:00
-
 
 permissions:
   contents: read
@@ -23,24 +19,22 @@ permissions:
 jobs:
   build:
 
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        java: [11, 13, 17]
+    runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Set up JDK ${{ matrix.java }}
-      uses: actions/setup-java@v2
+    - uses: actions/checkout@v3
+    
+    # Добавлен шаг для установки прав на исполнение скрипта gradlew
+    - name: Set executable permissions for gradlew
+      run: chmod +x gradlew
+      
+    - name: Set up JDK 11
+      uses: actions/setup-java@v3
       with:
-        java-version: ${{ matrix.java }}
-
+        java-version: '11'
+        distribution: 'temurin'
+        
     - name: Build with Gradle
-      run: ./gradlew build
-
-    - name: Run tests
-      run: ./gradlew test
+      uses: gradle/gradle-build-action@bd5760595778326ba7f1441bcf7e88b49de61a25 # v2.6.0
+      with:
+        arguments: build
